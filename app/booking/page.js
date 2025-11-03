@@ -100,19 +100,30 @@ export default function BookingPage() {
   }
 
   const calculatePrice = () => {
-    if (!bookingData.startTime || !bookingData.endTime || !selectedOffice) return 0
+    if (!selectedOffice) return 0
 
-    const [startHour, startMin] = bookingData.startTime.split(':').map(Number)
-    const [endHour, endMin] = bookingData.endTime.split(':').map(Number)
+    // If custom duration is selected, calculate based on custom times
+    if (bookingData.duration === 'custom') {
+      if (!bookingData.customStartTime || !bookingData.customEndTime) return 0
+      
+      const [startHour, startMin] = bookingData.customStartTime.split(':').map(Number)
+      const [endHour, endMin] = bookingData.customEndTime.split(':').map(Number)
+      
+      const startMinutes = startHour * 60 + startMin
+      const endMinutes = endHour * 60 + endMin
+      
+      const durationHours = (endMinutes - startMinutes) / 60
+      
+      if (durationHours <= 0) return 0
+      
+      return Math.round(selectedOffice.base_price_per_hour * durationHours)
+    }
+
+    // For predefined duration packages
+    const selectedPackage = durationPackages.find(pkg => pkg.id === bookingData.duration)
+    if (!selectedPackage) return 0
     
-    const startMinutes = startHour * 60 + startMin
-    const endMinutes = endHour * 60 + endMin
-    
-    const durationHours = (endMinutes - startMinutes) / 60
-    
-    if (durationHours <= 0) return 0
-    
-    return Math.round(selectedOffice.base_price_per_hour * durationHours)
+    return Math.round(selectedOffice.base_price_per_hour * selectedPackage.multiplier)
   }
 
   const handleBooking = async (e) => {
