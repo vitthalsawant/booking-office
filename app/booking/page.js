@@ -131,10 +131,17 @@ export default function BookingPage() {
   useEffect(() => {
     let filtered = offices
 
+    // Filter by search form space type
+    if (searchFilters.spaceType) {
+      filtered = filtered.filter(office => office.type === searchFilters.spaceType)
+    }
+
+    // Filter by selected type from URL params (office type cards from homepage)
     if (selectedType && selectedType !== 'all') {
       filtered = filtered.filter(office => office.type === selectedType)
     }
 
+    // Filter by location from search bar or homepage search
     if (searchQuery) {
       filtered = filtered.filter(office => 
         office.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -142,8 +149,21 @@ export default function BookingPage() {
       )
     }
 
+    // Filter by search form location
+    if (searchFilters.location) {
+      filtered = filtered.filter(office => 
+        office.location.toLowerCase().includes(searchFilters.location.toLowerCase()) ||
+        office.address.toLowerCase().includes(searchFilters.location.toLowerCase())
+      )
+    }
+
+    // Filter by capacity (number of people)
+    if (searchFilters.numberOfPeople > 1) {
+      filtered = filtered.filter(office => office.capacity >= searchFilters.numberOfPeople)
+    }
+
     setFilteredOffices(filtered)
-  }, [offices, selectedType, searchQuery])
+  }, [offices, selectedType, searchQuery, searchFilters])
 
   const fetchOffices = async () => {
     try {
