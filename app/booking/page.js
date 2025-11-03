@@ -684,6 +684,7 @@ export default function BookingPage() {
             </Card>
           </div>
         </div>
+        </div>
       </div>
     </div>
   )
