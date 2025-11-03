@@ -1,46 +1,74 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Search, MapPin, Clock, Users, Wifi, Calendar, Check } from 'lucide-react'
+import { useState } from 'react'
+import { Search, MapPin, Clock, Users, Wifi, Building2, TrendingUp, Star, ArrowRight, Calendar, CheckCircle2, Globe } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useToast } from '@/hooks/use-toast'
-import dynamic from 'next/dynamic'
-
-const MapComponent = dynamic(() => import('@/components/MapComponent'), { ssr: false })
+import { useRouter } from 'next/navigation'
 
 const officeTypes = [
-  { id: 'meeting-room', name: 'Meeting Room', icon: '🏢', description: 'Professional meeting spaces' },
-  { id: 'day-office', name: 'Day Office', icon: '💼', description: 'Private office for a day' },
-  { id: 'day-coworking', name: 'Day Co-working', icon: '🤝', description: 'Flexible coworking space' },
-  { id: 'private-office', name: 'Private Office', icon: '🏛️', description: 'Dedicated private office' },
-  { id: 'custom-office', name: 'Custom Office', icon: '✨', description: 'Tailored office solutions' },
+  { id: 'meeting-room', name: 'Meeting Room', icon: '🏢', description: 'Professional meeting spaces', price: 'From ₹450/hr' },
+  { id: 'day-office', name: 'Day Office', icon: '💼', description: 'Private office for a day', price: 'From ₹350/hr' },
+  { id: 'day-coworking', name: 'Day Co-working', icon: '🤝', description: 'Flexible coworking space', price: 'From ₹140/hr' },
+  { id: 'private-office', name: 'Private Office', icon: '🏛️', description: 'Dedicated private office', price: 'From ₹650/hr' },
+  { id: 'custom-office', name: 'Custom Office', icon: '✨', description: 'Tailored office solutions', price: 'From ₹700/hr' },
 ]
 
-const amenitiesList = [
-  'High-Speed Wi-Fi',
-  'Projector',
-  'Whiteboard',
-  'Video Conferencing',
-  'Printer/Scanner',
-  'Coffee/Tea',
-  'Air Conditioning',
-  'Parking',
+const stats = [
+  { label: 'Office Locations', value: '50+', icon: Building2, color: 'text-blue-600' },
+  { label: 'Happy Clients', value: '10,000+', icon: Users, color: 'text-green-600' },
+  { label: 'Cities Covered', value: '15+', icon: Globe, color: 'text-purple-600' },
+  { label: 'Booking Rate', value: '98%', icon: TrendingUp, color: 'text-orange-600' },
+]
+
+const testimonials = [
+  {
+    name: 'Rajesh Kumar',
+    company: 'Tech Startup India',
+    text: 'Amazing experience! Found the perfect meeting room in just minutes. The booking process was seamless.',
+    rating: 5,
+  },
+  {
+    name: 'Priya Sharma',
+    company: 'Marketing Pro',
+    text: 'Great variety of workspaces. The coworking spaces are modern and well-equipped. Highly recommended!',
+    rating: 5,
+  },
+  {
+    name: 'Amit Patel',
+    company: 'Consulting Firm',
+    text: 'Professional offices at reasonable prices. Perfect for our client meetings. Will definitely use again.',
+    rating: 5,
+  },
+]
+
+const features = [
+  {
+    icon: Clock,
+    title: 'Instant Booking',
+    description: 'Book your workspace in seconds with real-time availability',
+  },
+  {
+    icon: Wifi,
+    title: 'Premium Amenities',
+    description: 'High-speed internet, modern furniture, and all essentials included',
+  },
+  {
+    icon: MapPin,
+    title: 'Prime Locations',
+    description: 'Offices in the heart of major business districts across India',
+  },
+  {
+    icon: CheckCircle2,
+    title: 'Flexible Terms',
+    description: 'Hourly, daily, or monthly bookings with no long-term commitment',
+  },
 ]
 
 export default function App() {
-  const [view, setView] = useState('home') // 'home' or 'booking'
-  const [selectedType, setSelectedType] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
-  const [offices, setOffices] = useState([])
-  const [filteredOffices, setFilteredOffices] = useState([])
-  const [selectedOffice, setSelectedOffice] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const { toast } = useToast()
+  const router = useRouter()
 
   // Booking form state
   const [bookingData, setBookingData] = useState({
