@@ -36,8 +36,9 @@ CREATE TABLE IF NOT EXISTS bookings (
   company_name TEXT,
   purpose TEXT NOT NULL,
   booking_date DATE NOT NULL,
-  start_time TIME NOT NULL,
-  end_time TIME NOT NULL,
+  duration_package TEXT NOT NULL DEFAULT 'custom',
+  start_time TIME,
+  end_time TIME,
   total_price INTEGER NOT NULL,
   preferred_amenities TEXT[] DEFAULT '{}',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
