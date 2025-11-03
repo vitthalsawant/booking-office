@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Loader } from '@googlemaps/js-api-loader'
 
 export default function MapComponent({ offices, selectedOffice, onSelectOffice }) {
   const mapRef = useRef(null)
@@ -12,16 +11,23 @@ export default function MapComponent({ offices, selectedOffice, onSelectOffice }
 
   // Initialize Google Maps
   useEffect(() => {
-    const loader = new Loader({
-      apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-      version: 'weekly',
-      libraries: ['places', 'marker']
-    })
+    const initMap = async () => {
+      try {
+        // Load Google Maps script
+        if (!window.google) {
+          const script = document.createElement('script')
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places,marker`
+          script.async = true
+          script.defer = true
+          document.head.appendChild(script)
+          
+          await new Promise((resolve, reject) => {
+            script.onload = resolve
+            script.onerror = reject
+          })
+        }
 
-    loader
-      .load()
-      .then((google) => {
-        if (!mapRef.current) return
+        if (!mapRef.current || !window.google) return
 
         // Center map on India
         const mapOptions = {
@@ -32,13 +38,15 @@ export default function MapComponent({ offices, selectedOffice, onSelectOffice }
           fullscreenControl: true,
         }
 
-        mapInstanceRef.current = new google.maps.Map(mapRef.current, mapOptions)
+        mapInstanceRef.current = new window.google.maps.Map(mapRef.current, mapOptions)
         setMapLoaded(true)
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Error loading Google Maps:', error)
         setError('Failed to load map. Please check your API key.')
-      })
+      }
+    }
+
+    initMap()
   }, [])
 
   // Update markers when offices change
