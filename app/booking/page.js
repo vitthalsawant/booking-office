@@ -369,11 +369,11 @@ export default function BookingPage() {
               </div>
               <Button 
                 variant="outline" 
-                onClick={() => setShowBookings(!showBookings)}
+                onClick={() => setShowBookingsModal(true)}
                 className="flex items-center gap-2"
               >
                 <Calendar className="h-4 w-4" />
-                {showBookings ? 'Hide' : 'View'} My Bookings ({existingBookings.length})
+                View My Bookings ({existingBookings.length})
               </Button>
             </div>
           </CardContent>
