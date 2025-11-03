@@ -440,14 +440,18 @@ export default function BookingPage() {
                       </div>
                     </div>
 
-                    {bookingData.startTime && bookingData.endTime && (
+                    {bookingData.duration && (
                       <div className="bg-muted p-4 rounded-lg">
                         <div className="flex justify-between items-center">
                           <span className="text-lg font-semibold">Total Price:</span>
                           <span className="text-2xl font-bold text-primary">₹{calculatePrice()}</span>
                         </div>
                         <p className="text-sm text-muted-foreground mt-1">
-                          Duration: {((new Date(`2000-01-01T${bookingData.endTime}`) - new Date(`2000-01-01T${bookingData.startTime}`)) / 3600000).toFixed(1)} hours
+                          {bookingData.duration === 'custom' && bookingData.customStartTime && bookingData.customEndTime ? (
+                            `Duration: ${((new Date(`2000-01-01T${bookingData.customEndTime}`) - new Date(`2000-01-01T${bookingData.customStartTime}`)) / 3600000).toFixed(1)} hours`
+                          ) : (
+                            `Package: ${durationPackages.find(pkg => pkg.id === bookingData.duration)?.name || ''}`
+                          )}
                         </p>
                       </div>
                     )}
