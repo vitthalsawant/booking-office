@@ -45,6 +45,7 @@ CREATE TABLE bookings (
   end_time TIME,
   total_price INTEGER NOT NULL,
   preferred_amenities TEXT[] DEFAULT '{}',
+  status TEXT DEFAULT 'pending',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
