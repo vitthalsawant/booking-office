@@ -18,7 +18,7 @@ async function initializeDatabase() {
     return // Already initialized
   }
 
-  // Comprehensive dummy offices data - All categories for every major location
+  // Comprehensive dummy offices data - All categories for every major location + additional cities
   const dummyOffices = [
     // ========== DELHI - Meeting Rooms ==========
     {
@@ -73,6 +73,19 @@ async function initializeDatabase() {
       capacity: 10,
       availability_status: 'available'
     },
+    {
+      name: 'Conference Hub - Lajpat Nagar',
+      type: 'meeting-room',
+      location: 'Lajpat Nagar, Delhi',
+      address: 'Lajpat Nagar, New Delhi 110024',
+      latitude: 28.5678,
+      longitude: 77.2463,
+      base_price_per_hour: 420,
+      amenities: ['High-Speed Wi-Fi', 'Projector', 'Whiteboard', 'Coffee/Tea', 'Air Conditioning'],
+      description: 'Affordable meeting room in central Delhi',
+      capacity: 8,
+      availability_status: 'available'
+    },
 
     // ========== DELHI - Day Offices ==========
     {
@@ -98,6 +111,19 @@ async function initializeDatabase() {
       base_price_per_hour: 360,
       amenities: ['High-Speed Wi-Fi', 'Printer/Scanner', 'Coffee/Tea', 'Parking'],
       description: 'Day office near shopping district',
+      capacity: 4,
+      availability_status: 'available'
+    },
+    {
+      name: 'Professional Office - Lajpat Nagar',
+      type: 'day-office',
+      location: 'Lajpat Nagar, Delhi',
+      address: 'Lajpat Nagar, New Delhi 110024',
+      latitude: 28.5680,
+      longitude: 77.2470,
+      base_price_per_hour: 340,
+      amenities: ['High-Speed Wi-Fi', 'Printer/Scanner', 'Coffee/Tea', 'Air Conditioning'],
+      description: 'Budget-friendly day office space',
       capacity: 4,
       availability_status: 'available'
     },
@@ -129,6 +155,19 @@ async function initializeDatabase() {
       capacity: 40,
       availability_status: 'available'
     },
+    {
+      name: 'Community Space - Lajpat Nagar',
+      type: 'day-coworking',
+      location: 'Lajpat Nagar, Delhi',
+      address: 'Lajpat Nagar, New Delhi 110024',
+      latitude: 28.5685,
+      longitude: 77.2475,
+      base_price_per_hour: 130,
+      amenities: ['High-Speed Wi-Fi', 'Coffee/Tea', 'Printer/Scanner'],
+      description: 'Affordable coworking community space',
+      capacity: 35,
+      availability_status: 'available'
+    },
 
     // ========== DELHI - Private Offices ==========
     {
@@ -157,6 +196,19 @@ async function initializeDatabase() {
       capacity: 12,
       availability_status: 'available'
     },
+    {
+      name: 'Business Office - Lajpat Nagar',
+      type: 'private-office',
+      location: 'Lajpat Nagar, Delhi',
+      address: 'Lajpat Nagar, New Delhi 110024',
+      latitude: 28.5690,
+      longitude: 77.2480,
+      base_price_per_hour: 620,
+      amenities: ['High-Speed Wi-Fi', 'Printer/Scanner', 'Video Conferencing', 'Coffee/Tea', 'Air Conditioning'],
+      description: 'Professional private office space',
+      capacity: 8,
+      availability_status: 'available'
+    },
 
     // ========== DELHI - Custom Offices ==========
     {
@@ -183,6 +235,244 @@ async function initializeDatabase() {
       amenities: ['High-Speed Wi-Fi', 'Video Conferencing', 'Projector', 'Whiteboard', 'Printer/Scanner', 'Air Conditioning'],
       description: 'Custom designed workspace for growing businesses',
       capacity: 14,
+      availability_status: 'available'
+    },
+
+    // ========== PUNE - All Categories ==========
+    {
+      name: 'Tech Meeting Room - Hinjewadi',
+      type: 'meeting-room',
+      location: 'Hinjewadi, Pune',
+      address: 'Phase 1, Hinjewadi, Pune 411057',
+      latitude: 18.5912,
+      longitude: 73.7389,
+      base_price_per_hour: 420,
+      amenities: ['High-Speed Wi-Fi', 'Projector', 'Whiteboard', 'Video Conferencing', 'Coffee/Tea', 'Air Conditioning'],
+      description: 'Modern meeting room in IT hub',
+      capacity: 10,
+      availability_status: 'available'
+    },
+    {
+      name: 'Executive Boardroom - Koregaon Park',
+      type: 'meeting-room',
+      location: 'Koregaon Park, Pune',
+      address: 'Koregaon Park, Pune 411001',
+      latitude: 18.5362,
+      longitude: 73.8980,
+      base_price_per_hour: 460,
+      amenities: ['High-Speed Wi-Fi', 'Projector', 'Video Conferencing', 'Whiteboard', 'Coffee/Tea', 'Parking'],
+      description: 'Premium boardroom in upscale area',
+      capacity: 12,
+      availability_status: 'available'
+    },
+    {
+      name: 'Day Office - Hinjewadi',
+      type: 'day-office',
+      location: 'Hinjewadi, Pune',
+      address: 'Hinjewadi, Pune 411057',
+      latitude: 18.5920,
+      longitude: 73.7395,
+      base_price_per_hour: 320,
+      amenities: ['High-Speed Wi-Fi', 'Printer/Scanner', 'Air Conditioning', 'Coffee/Tea', 'Parking'],
+      description: 'Professional day office in tech park',
+      capacity: 6,
+      availability_status: 'available'
+    },
+    {
+      name: 'Startup Office - Koregaon Park',
+      type: 'day-office',
+      location: 'Koregaon Park, Pune',
+      address: 'Koregaon Park, Pune 411001',
+      latitude: 18.5370,
+      longitude: 73.8990,
+      base_price_per_hour: 350,
+      amenities: ['High-Speed Wi-Fi', 'Printer/Scanner', 'Coffee/Tea', 'Air Conditioning'],
+      description: 'Flexible day office for startups',
+      capacity: 5,
+      availability_status: 'available'
+    },
+    {
+      name: 'Tech CoWork - Hinjewadi',
+      type: 'day-coworking',
+      location: 'Hinjewadi, Pune',
+      address: 'Hinjewadi IT Park, Pune 411057',
+      latitude: 18.5925,
+      longitude: 73.7400,
+      base_price_per_hour: 140,
+      amenities: ['High-Speed Wi-Fi', 'Coffee/Tea', 'Printer/Scanner', 'Air Conditioning', 'Parking'],
+      description: 'Tech-focused coworking space',
+      capacity: 60,
+      availability_status: 'available'
+    },
+    {
+      name: 'Creative Hub - Koregaon Park',
+      type: 'day-coworking',
+      location: 'Koregaon Park, Pune',
+      address: 'Koregaon Park, Pune 411001',
+      latitude: 18.5375,
+      longitude: 73.8995,
+      base_price_per_hour: 155,
+      amenities: ['High-Speed Wi-Fi', 'Coffee/Tea', 'Printer/Scanner', 'Air Conditioning'],
+      description: 'Creative coworking community',
+      capacity: 45,
+      availability_status: 'available'
+    },
+    {
+      name: 'Private Office - Hinjewadi',
+      type: 'private-office',
+      location: 'Hinjewadi, Pune',
+      address: 'Hinjewadi, Pune 411057',
+      latitude: 18.5930,
+      longitude: 73.7405,
+      base_price_per_hour: 580,
+      amenities: ['High-Speed Wi-Fi', 'Video Conferencing', 'Printer/Scanner', 'Air Conditioning', 'Parking'],
+      description: 'Private office in IT corridor',
+      capacity: 8,
+      availability_status: 'available'
+    },
+    {
+      name: 'Executive Suite - Koregaon Park',
+      type: 'private-office',
+      location: 'Koregaon Park, Pune',
+      address: 'Koregaon Park, Pune 411001',
+      latitude: 18.5380,
+      longitude: 73.9000,
+      base_price_per_hour: 640,
+      amenities: ['High-Speed Wi-Fi', 'Video Conferencing', 'Projector', 'Whiteboard', 'Coffee/Tea', 'Air Conditioning', 'Parking'],
+      description: 'Luxury private office suite',
+      capacity: 10,
+      availability_status: 'available'
+    },
+    {
+      name: 'Custom Workspace - Hinjewadi',
+      type: 'custom-office',
+      location: 'Hinjewadi, Pune',
+      address: 'Hinjewadi IT Park, Pune 411057',
+      latitude: 18.5935,
+      longitude: 73.7410,
+      base_price_per_hour: 650,
+      amenities: ['High-Speed Wi-Fi', 'Video Conferencing', 'Projector', 'Whiteboard', 'Printer/Scanner', 'Air Conditioning', 'Parking'],
+      description: 'Customizable office for tech teams',
+      capacity: 16,
+      availability_status: 'available'
+    },
+
+    // ========== HYDERABAD - All Categories ==========
+    {
+      name: 'Tech Conference Room - HITEC City',
+      type: 'meeting-room',
+      location: 'HITEC City, Hyderabad',
+      address: 'HITEC City, Hyderabad 500081',
+      latitude: 17.4435,
+      longitude: 78.3772,
+      base_price_per_hour: 440,
+      amenities: ['High-Speed Wi-Fi', 'Projector', 'Whiteboard', 'Video Conferencing', 'Coffee/Tea', 'Air Conditioning'],
+      description: 'Modern conference room in tech hub',
+      capacity: 10,
+      availability_status: 'available'
+    },
+    {
+      name: 'Executive Boardroom - Banjara Hills',
+      type: 'meeting-room',
+      location: 'Banjara Hills, Hyderabad',
+      address: 'Banjara Hills, Hyderabad 500034',
+      latitude: 17.4239,
+      longitude: 78.4738,
+      base_price_per_hour: 480,
+      amenities: ['High-Speed Wi-Fi', 'Projector', 'Video Conferencing', 'Whiteboard', 'Coffee/Tea', 'Parking'],
+      description: 'Premium meeting space in upscale area',
+      capacity: 12,
+      availability_status: 'available'
+    },
+    {
+      name: 'Business Day Office - HITEC City',
+      type: 'day-office',
+      location: 'HITEC City, Hyderabad',
+      address: 'HITEC City, Hyderabad 500081',
+      latitude: 17.4440,
+      longitude: 78.3780,
+      base_price_per_hour: 340,
+      amenities: ['High-Speed Wi-Fi', 'Printer/Scanner', 'Air Conditioning', 'Coffee/Tea', 'Parking'],
+      description: 'Professional day office in IT district',
+      capacity: 6,
+      availability_status: 'available'
+    },
+    {
+      name: 'Startup Office - Banjara Hills',
+      type: 'day-office',
+      location: 'Banjara Hills, Hyderabad',
+      address: 'Banjara Hills, Hyderabad 500034',
+      latitude: 17.4245,
+      longitude: 78.4745,
+      base_price_per_hour: 360,
+      amenities: ['High-Speed Wi-Fi', 'Printer/Scanner', 'Coffee/Tea', 'Air Conditioning'],
+      description: 'Flexible office space for businesses',
+      capacity: 5,
+      availability_status: 'available'
+    },
+    {
+      name: 'Innovation CoWork - HITEC City',
+      type: 'day-coworking',
+      location: 'HITEC City, Hyderabad',
+      address: 'HITEC City, Hyderabad 500081',
+      latitude: 17.4445,
+      longitude: 78.3785,
+      base_price_per_hour: 145,
+      amenities: ['High-Speed Wi-Fi', 'Coffee/Tea', 'Printer/Scanner', 'Air Conditioning', 'Parking'],
+      description: 'Tech-focused coworking environment',
+      capacity: 55,
+      availability_status: 'available'
+    },
+    {
+      name: 'Creative Space - Banjara Hills',
+      type: 'day-coworking',
+      location: 'Banjara Hills, Hyderabad',
+      address: 'Banjara Hills, Hyderabad 500034',
+      latitude: 17.4250,
+      longitude: 78.4750,
+      base_price_per_hour: 160,
+      amenities: ['High-Speed Wi-Fi', 'Coffee/Tea', 'Printer/Scanner', 'Air Conditioning'],
+      description: 'Creative coworking community',
+      capacity: 40,
+      availability_status: 'available'
+    },
+    {
+      name: 'Private Suite - HITEC City',
+      type: 'private-office',
+      location: 'HITEC City, Hyderabad',
+      address: 'HITEC City, Hyderabad 500081',
+      latitude: 17.4450,
+      longitude: 78.3790,
+      base_price_per_hour: 600,
+      amenities: ['High-Speed Wi-Fi', 'Video Conferencing', 'Printer/Scanner', 'Air Conditioning', 'Parking'],
+      description: 'Premium private office in tech hub',
+      capacity: 9,
+      availability_status: 'available'
+    },
+    {
+      name: 'Executive Office - Banjara Hills',
+      type: 'private-office',
+      location: 'Banjara Hills, Hyderabad',
+      address: 'Banjara Hills, Hyderabad 500034',
+      latitude: 17.4255,
+      longitude: 78.4755,
+      base_price_per_hour: 660,
+      amenities: ['High-Speed Wi-Fi', 'Video Conferencing', 'Projector', 'Whiteboard', 'Coffee/Tea', 'Air Conditioning', 'Parking'],
+      description: 'Luxury executive office suite',
+      capacity: 11,
+      availability_status: 'available'
+    },
+    {
+      name: 'Custom Business Suite - HITEC City',
+      type: 'custom-office',
+      location: 'HITEC City, Hyderabad',
+      address: 'HITEC City, Hyderabad 500081',
+      latitude: 17.4455,
+      longitude: 78.3795,
+      base_price_per_hour: 680,
+      amenities: ['High-Speed Wi-Fi', 'Video Conferencing', 'Projector', 'Whiteboard', 'Printer/Scanner', 'Air Conditioning', 'Parking'],
+      description: 'Tailored office solution for enterprises',
+      capacity: 17,
       availability_status: 'available'
     },
 
