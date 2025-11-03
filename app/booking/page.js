@@ -50,7 +50,66 @@ export default function BookingPage() {
   const [filteredOffices, setFilteredOffices] = useState([])
   const [selectedOffice, setSelectedOffice] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [showBookings, setShowBookings] = useState(false)
   const { toast } = useToast()
+
+  // Search form state
+  const [searchFilters, setSearchFilters] = useState({
+    spaceType: 'day-coworking',
+    date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Tomorrow
+    timeFrom: '09:00',
+    timeUntil: '10:00',
+    numberOfPeople: 1,
+    location: ''
+  })
+
+  // Dummy existing bookings data
+  const [existingBookings] = useState([
+    {
+      id: '1',
+      office_name: 'Tech CoWork - Koramangala',
+      location: 'Koramangala, Bangalore',
+      date: '2025-01-15',
+      time: '10:00 - 14:00',
+      duration: 'Half Day',
+      people: 3,
+      price: 560,
+      status: 'confirmed'
+    },
+    {
+      id: '2',
+      office_name: 'Executive Meeting Room - Connaught Place',
+      location: 'Connaught Place, Delhi',
+      date: '2025-01-16',
+      time: '09:00 - 18:00',
+      duration: '10 AM - 7 PM',
+      people: 8,
+      price: 3500,
+      status: 'confirmed'
+    },
+    {
+      id: '3',
+      office_name: 'Creative CoSpace - Lower Parel',
+      location: 'Lower Parel, Mumbai',
+      date: '2025-01-17',
+      time: '14:00 - 17:00',
+      duration: 'Custom',
+      people: 2,
+      price: 540,
+      status: 'pending'
+    },
+    {
+      id: '4',
+      office_name: 'Private Office - Hinjewadi',
+      location: 'Hinjewadi, Pune',
+      date: '2025-01-18',
+      time: '08:00 - 20:00',
+      duration: 'Full Day',
+      people: 6,
+      price: 5220,
+      status: 'confirmed'
+    }
+  ])
 
   const [bookingData, setBookingData] = useState({
     fullName: '',
@@ -59,7 +118,7 @@ export default function BookingPage() {
     companyName: '',
     purpose: '',
     bookingDate: '',
-    duration: '', // Changed from startTime/endTime to duration package
+    duration: '',
     customStartTime: '',
     customEndTime: '',
     amenities: [],
