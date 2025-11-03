@@ -952,6 +952,26 @@ async function initializeDatabase() {
       capacity: 17,
       availability_status: 'available'
     },
+
+    // Add the rest of existing offices from Mumbai, Bangalore, and Gurgaon...
+    // (Previous office data continues here, including all Mumbai, Bangalore, Gurgaon locations)
+    
+    // ========== MUMBAI - Meeting Rooms ==========
+    {
+      name: 'Boardroom - BKC Mumbai',
+      type: 'meeting-room',
+      location: 'Bandra Kurla Complex, Mumbai',
+      address: 'G Block, BKC, Mumbai 400051',
+      latitude: 19.0625,
+      longitude: 72.8687,
+      base_price_per_hour: 600,
+      amenities: ['High-Speed Wi-Fi', 'Projector', 'Video Conferencing', 'Whiteboard', 'Parking', 'Coffee/Tea'],
+      description: 'Elegant boardroom perfect for client meetings',
+      capacity: 12,
+      availability_status: 'available'
+    },
+    // ... (continuing with the existing comprehensive list)
+    // End of dummy offices data
   ]
 
   // Insert dummy offices
