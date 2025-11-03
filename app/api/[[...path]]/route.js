@@ -1051,11 +1051,12 @@ export async function POST(request) {
         purpose: body.purpose,
         booking_date: body.bookingDate,
         duration_package: body.duration || 'custom',
-        start_time: body.customStartTime || null,
-        end_time: body.customEndTime || null,
+        start_time: body.customStartTime || body.timeFrom || null,
+        end_time: body.customEndTime || body.timeUntil || null,
         total_price: body.totalPrice,
         preferred_amenities: body.amenities || [],
         created_at: new Date().toISOString(),
+        status: 'pending' // Initially pending, can be confirmed from Supabase
       }
 
       const { data, error } = await supabase
