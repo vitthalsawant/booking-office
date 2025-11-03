@@ -33,27 +33,12 @@ const amenitiesList = [
   'Parking',
 ]
 
-export default function BookingPage() {
-  const searchParams = useSearchParams()
-  const [selectedType, setSelectedType] = useState(searchParams.get('type') || '')
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('location') || '')
-  const [offices, setOffices] = useState([])
-  const [filteredOffices, setFilteredOffices] = useState([])
-  const [selectedOffice, setSelectedOffice] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const { toast } = useToast()
-
-  const [bookingData, setBookingData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    companyName: '',
-    purpose: '',
-    bookingDate: '',
-    startTime: '',
-    endTime: '',
-    amenities: [],
-  })
+// Duration packages with pricing multipliers
+const durationPackages = [
+  { id: '1-hour', name: '1 Hour', hours: 1, multiplier: 1, description: 'Quick meeting' },
+  { id: 'half-day', name: 'Half Day', hours: 4, multiplier: 3.5, description: '4 hours (9 AM - 1 PM or 2 PM - 6 PM)' },
+  { id: '10am-7pm', name: '10 AM - 7 PM', hours: 9, multiplier: 7, description: 'Business hours (9 hours)' },
+  { id: 'full-day', name: 'Full Day', hours: 12, multiplier: 9, description: '12 hours (8 AM - 8 PM)
 
   useEffect(() => {
     fetchOffices()
