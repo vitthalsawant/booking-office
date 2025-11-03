@@ -359,7 +359,7 @@ export default function BookingPage() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="date">Date *</Label>
                         <Input
@@ -372,26 +372,53 @@ export default function BookingPage() {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="startTime">Start Time *</Label>
-                        <Input
-                          id="startTime"
-                          type="time"
-                          required
-                          value={bookingData.startTime}
-                          onChange={(e) => setBookingData({...bookingData, startTime: e.target.value})}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="endTime">End Time *</Label>
-                        <Input
-                          id="endTime"
-                          type="time"
-                          required
-                          value={bookingData.endTime}
-                          onChange={(e) => setBookingData({...bookingData, endTime: e.target.value})}
-                        />
+                        <Label htmlFor="duration">Duration Package *</Label>
+                        <Select 
+                          value={bookingData.duration} 
+                          onValueChange={(value) => setBookingData({...bookingData, duration: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select duration" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {durationPackages.map(pkg => (
+                              <SelectItem key={pkg.id} value={pkg.id}>
+                                <div className="flex flex-col">
+                                  <span className="font-medium">{pkg.name}</span>
+                                  <span className="text-xs text-muted-foreground">{pkg.description}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
+
+                    {/* Custom time fields - only show when custom duration is selected */}
+                    {bookingData.duration === 'custom' && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="customStartTime">Start Time *</Label>
+                          <Input
+                            id="customStartTime"
+                            type="time"
+                            required
+                            value={bookingData.customStartTime}
+                            onChange={(e) => setBookingData({...bookingData, customStartTime: e.target.value})}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="customEndTime">End Time *</Label>
+                          <Input
+                            id="customEndTime"
+                            type="time"
+                            required
+                            value={bookingData.customEndTime}
+                            onChange={(e) => setBookingData({...bookingData, customEndTime: e.target.value})}
+                          />
+                        </div>
+                      </div>
+                    )}
 
                     <div>
                       <Label>Preferred Amenities</Label>
