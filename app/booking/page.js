@@ -379,70 +379,80 @@ export default function BookingPage() {
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-          {/* Left Side - Bookings History (when toggled) */}
-          {showBookings && (
-            <div className="xl:col-span-1">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5" />
+        <div className="grid grid-cols-1 xl:grid-cols-1 gap-8">
+          {/* Bookings Modal */}
+          {showBookingsModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowBookingsModal(false)}>
+              <div className="bg-card rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold flex items-center gap-2">
+                    <Calendar className="h-6 w-6" />
                     My Bookings
-                  </CardTitle>
-                  <CardDescription>Your recent and upcoming bookings</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4 max-h-[600px] overflow-y-auto">
+                  </h2>
+                  <Button variant="ghost" onClick={() => setShowBookingsModal(false)}>
+                    ✕
+                  </Button>
+                </div>
+                
+                {existingBookings.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No bookings yet. Book your first workspace!</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
                     {existingBookings.map((booking) => (
                       <Card key={booking.id} className="border-l-4 border-l-primary">
                         <CardContent className="p-4">
-                          <div className="space-y-2">
+                          <div className="space-y-3">
                             <div className="flex justify-between items-start">
-                              <h4 className="font-semibold text-sm">{booking.office_name}</h4>
-                              <span className={`text-xs px-2 py-1 rounded-full ${
+                              <h4 className="font-semibold text-lg">{booking.office_name}</h4>
+                              <span className={`text-sm px-3 py-1 rounded-full font-medium ${
                                 booking.status === 'confirmed' 
                                   ? 'bg-green-100 text-green-700' 
                                   : 'bg-yellow-100 text-yellow-700'
                               }`}>
-                                {booking.status}
+                                {booking.status === 'confirmed' ? 'Confirmed' : 'Pending'}
                               </span>
                             </div>
-                            <p className="text-xs text-muted-foreground">{booking.location}</p>
-                            <div className="grid grid-cols-2 gap-2 text-xs">
+                            <p className="text-muted-foreground">{booking.location}</p>
+                            <div className="grid grid-cols-2 gap-4">
                               <div>
-                                <span className="font-medium">Date:</span>
+                                <span className="font-medium text-sm">Date:</span>
                                 <br />
-                                {new Date(booking.date).toLocaleDateString()}
+                                <span className="text-sm">{new Date(booking.date).toLocaleDateString()}</span>
                               </div>
                               <div>
-                                <span className="font-medium">Time:</span>
+                                <span className="font-medium text-sm">Time:</span>
                                 <br />
-                                {booking.time}
+                                <span className="text-sm">{booking.time}</span>
+                              </div>
+                              <div>
+                                <span className="font-medium text-sm">People:</span>
+                                <br />
+                                <span className="text-sm">{booking.people} {booking.people === 1 ? 'person' : 'people'}</span>
+                              </div>
+                              <div>
+                                <span className="font-medium text-sm">Total Price:</span>
+                                <br />
+                                <span className="text-lg font-bold text-primary">₹{booking.price}</span>
                               </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-2 text-xs">
-                              <div>
-                                <span className="font-medium">People:</span> {booking.people}
-                              </div>
-                              <div>
-                                <span className="font-medium">Price:</span> ₹{booking.price}
-                              </div>
-                            </div>
-                            <div className="text-xs">
-                              <span className="font-medium">Package:</span> {booking.duration}
+                            <div>
+                              <span className="font-medium text-sm">Duration Package:</span> {booking.duration}
                             </div>
                           </div>
                         </CardContent>
                       </Card>
                     ))}
                   </div>
-                </CardContent>
-              </Card>
+                )}
+              </div>
             </div>
           )}
 
           {/* Main Content - Office List and Booking Form */}
-          <div className={`${showBookings ? 'xl:col-span-3' : 'xl:col-span-4'}`}>
+          <div className="xl:col-span-1">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Side - Booking Form and Office List */}
           <div className="space-y-6">
