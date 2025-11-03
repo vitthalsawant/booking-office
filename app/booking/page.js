@@ -157,8 +157,9 @@ export default function BookingPage() {
           companyName: '',
           purpose: '',
           bookingDate: '',
-          startTime: '',
-          endTime: '',
+          duration: '',
+          customStartTime: '',
+          customEndTime: '',
           amenities: [],
         })
         setSelectedOffice(null)
