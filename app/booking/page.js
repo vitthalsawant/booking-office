@@ -139,6 +139,22 @@ export default function BookingPage() {
     }
   }
 
+  const calculatePriceFromTime = (office, timeFrom, timeUntil) => {
+    if (!office || !timeFrom || !timeUntil) return 0
+    
+    const [startHour, startMin] = timeFrom.split(':').map(Number)
+    const [endHour, endMin] = timeUntil.split(':').map(Number)
+    
+    const startMinutes = startHour * 60 + startMin
+    const endMinutes = endHour * 60 + endMin
+    
+    const durationHours = (endMinutes - startMinutes) / 60
+    
+    if (durationHours <= 0) return 0
+    
+    return Math.round(office.base_price_per_hour * durationHours)
+  }
+
   const calculatePrice = () => {
     if (!selectedOffice) return 0
 
