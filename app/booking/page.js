@@ -63,53 +63,14 @@ export default function BookingPage() {
     location: ''
   })
 
-  // Dummy existing bookings data
-  const [existingBookings] = useState([
-    {
-      id: '1',
-      office_name: 'Tech CoWork - Koramangala',
-      location: 'Koramangala, Bangalore',
-      date: '2025-01-15',
-      time: '10:00 - 14:00',
-      duration: 'Half Day',
-      people: 3,
-      price: 560,
-      status: 'confirmed'
-    },
-    {
-      id: '2',
-      office_name: 'Executive Meeting Room - Connaught Place',
-      location: 'Connaught Place, Delhi',
-      date: '2025-01-16',
-      time: '09:00 - 18:00',
-      duration: '10 AM - 7 PM',
-      people: 8,
-      price: 3500,
-      status: 'confirmed'
-    },
-    {
-      id: '3',
-      office_name: 'Creative CoSpace - Lower Parel',
-      location: 'Lower Parel, Mumbai',
-      date: '2025-01-17',
-      time: '14:00 - 17:00',
-      duration: 'Custom',
-      people: 2,
-      price: 540,
-      status: 'pending'
-    },
-    {
-      id: '4',
-      office_name: 'Private Office - Hinjewadi',
-      location: 'Hinjewadi, Pune',
-      date: '2025-01-18',
-      time: '08:00 - 20:00',
-      duration: 'Full Day',
-      people: 6,
-      price: 5220,
-      status: 'confirmed'
-    }
-  ])
+  // Dummy existing bookings data (empty initially, populated after actual bookings)
+  const [existingBookings, setExistingBookings] = useState([])
+  
+  // Modal state for viewing bookings
+  const [showBookingsModal, setShowBookingsModal] = useState(false)
+  
+  // Booking form visibility
+  const [showBookingForm, setShowBookingForm] = useState(false)
 
   const [bookingData, setBookingData] = useState({
     fullName: '',
