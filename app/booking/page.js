@@ -283,43 +283,169 @@ export default function BookingPage() {
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Page Title */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Book Your Workspace</h1>
-          <p className="text-muted-foreground text-lg">Select your preferred office type, location, and book instantly</p>
-        </div>
-
-        {/* Filters */}
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label className="mb-2 block font-semibold">Space Type</Label>
-            <Select value={selectedType} onValueChange={setSelectedType}>
-              <SelectTrigger className="h-12">
-                <SelectValue placeholder="All Types" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                {officeTypes.map(type => (
-                  <SelectItem key={type.id} value={type.id}>{type.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label className="mb-2 block font-semibold">Search Location</Label>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-              <Input
-                placeholder="City or area..."
-                className="pl-10 h-12"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+        {/* Search Form */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="text-2xl">Book Your Workspace</CardTitle>
+            <CardDescription>Find the perfect space for your needs</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div>
+                <Label className="text-sm font-semibold">Space type required</Label>
+                <Select 
+                  value={searchFilters.spaceType} 
+                  onValueChange={(value) => setSearchFilters({...searchFilters, spaceType: value})}
+                >
+                  <SelectTrigger className="h-10">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {officeTypes.map(type => (
+                      <SelectItem key={type.id} value={type.id}>{type.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label className="text-sm font-semibold">Date</Label>
+                <Input
+                  type="date"
+                  className="h-10"
+                  value={searchFilters.date}
+                  onChange={(e) => setSearchFilters({...searchFilters, date: e.target.value})}
+                  min={new Date().toISOString().split('T')[0]}
+                />
+              </div>
+              
+              <div>
+                <Label className="text-sm font-semibold">Time from</Label>
+                <Input
+                  type="time"
+                  className="h-10"
+                  value={searchFilters.timeFrom}
+                  onChange={(e) => setSearchFilters({...searchFilters, timeFrom: e.target.value})}
+                />
+              </div>
+              
+              <div>
+                <Label className="text-sm font-semibold">Time until</Label>
+                <Input
+                  type="time"
+                  className="h-10"
+                  value={searchFilters.timeUntil}
+                  onChange={(e) => setSearchFilters({...searchFilters, timeUntil: e.target.value})}
+                />
+              </div>
+              
+              <div>
+                <Label className="text-sm font-semibold">No of people</Label>
+                <Input
+                  type="number"
+                  className="h-10"
+                  min="1"
+                  max="50"
+                  value={searchFilters.numberOfPeople}
+                  onChange={(e) => setSearchFilters({...searchFilters, numberOfPeople: parseInt(e.target.value) || 1})}
+                />
+              </div>
+              
+              <div>
+                <Label className="text-sm font-semibold">Location</Label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="City or area"
+                    className="pl-10 h-10"
+                    value={searchFilters.location}
+                    onChange={(e) => setSearchFilters({...searchFilters, location: e.target.value})}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+            
+            <div className="flex justify-between items-center mt-4">
+              <div className="text-sm text-muted-foreground">
+                Found {filteredOffices.length} spaces for {searchFilters.numberOfPeople} {searchFilters.numberOfPeople === 1 ? 'person' : 'people'}
+              </div>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowBookings(!showBookings)}
+                className="flex items-center gap-2"
+              >
+                <Calendar className="h-4 w-4" />
+                {showBookings ? 'Hide' : 'View'} My Bookings ({existingBookings.length})
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+          {/* Left Side - Bookings History (when toggled) */}
+          {showBookings && (
+            <div className="xl:col-span-1">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5" />
+                    My Bookings
+                  </CardTitle>
+                  <CardDescription>Your recent and upcoming bookings</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4 max-h-[600px] overflow-y-auto">
+                    {existingBookings.map((booking) => (
+                      <Card key={booking.id} className="border-l-4 border-l-primary">
+                        <CardContent className="p-4">
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-start">
+                              <h4 className="font-semibold text-sm">{booking.office_name}</h4>
+                              <span className={`text-xs px-2 py-1 rounded-full ${
+                                booking.status === 'confirmed' 
+                                  ? 'bg-green-100 text-green-700' 
+                                  : 'bg-yellow-100 text-yellow-700'
+                              }`}>
+                                {booking.status}
+                              </span>
+                            </div>
+                            <p className="text-xs text-muted-foreground">{booking.location}</p>
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                              <div>
+                                <span className="font-medium">Date:</span>
+                                <br />
+                                {new Date(booking.date).toLocaleDateString()}
+                              </div>
+                              <div>
+                                <span className="font-medium">Time:</span>
+                                <br />
+                                {booking.time}
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                              <div>
+                                <span className="font-medium">People:</span> {booking.people}
+                              </div>
+                              <div>
+                                <span className="font-medium">Price:</span> ₹{booking.price}
+                              </div>
+                            </div>
+                            <div className="text-xs">
+                              <span className="font-medium">Package:</span> {booking.duration}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Main Content - Office List and Booking Form */}
+          <div className={`${showBookings ? 'xl:col-span-3' : 'xl:col-span-4'}`}>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Side - Booking Form and Office List */}
           <div className="space-y-6">
             {/* Available Offices */}
