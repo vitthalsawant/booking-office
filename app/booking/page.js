@@ -196,16 +196,36 @@ export default function BookingPage() {
           ...bookingData,
           officeId: selectedOffice.id,
           totalPrice,
+          timeFrom: searchFilters.timeFrom,
+          timeUntil: searchFilters.timeUntil,
+          numberOfPeople: searchFilters.numberOfPeople,
         }),
       })
 
       const data = await response.json()
 
       if (data.success) {
+        // Add the booking to local state
+        const newBooking = {
+          id: data.booking.id,
+          office_name: selectedOffice.name,
+          location: selectedOffice.location,
+          date: bookingData.bookingDate,
+          time: `${searchFilters.timeFrom} - ${searchFilters.timeUntil}`,
+          duration: bookingData.duration || 'Custom',
+          people: searchFilters.numberOfPeople,
+          price: totalPrice,
+          status: 'pending'
+        }
+        
+        setExistingBookings(prev => [newBooking, ...prev])
+        
         toast({
-          title: 'Booking Confirmed! 🎉',
-          description: `Your booking at ${selectedOffice.name} has been confirmed for ${bookingData.bookingDate}`,
+          title: 'Booking Submitted! 🎉',
+          description: `Your booking request has been submitted for ${selectedOffice.name}. Status: Pending confirmation.`,
         })
+        
+        // Reset form
         setBookingData({
           fullName: '',
           email: '',
@@ -219,6 +239,7 @@ export default function BookingPage() {
           amenities: [],
         })
         setSelectedOffice(null)
+        setShowBookingForm(false)
       } else {
         toast({
           title: 'Booking Failed',
