@@ -51,10 +51,14 @@ CREATE INDEX IF NOT EXISTS idx_bookings_date ON bookings(booking_date);
 ALTER TABLE offices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
 
--- Create policies for public read access to offices
-CREATE POLICY "Allow public read access to offices"
-  ON offices FOR SELECT
-  USING (true);
+-- Create policies for public read and insert access to offices (no RLS restrictions for demo)
+DROP POLICY IF EXISTS "Allow public read access to offices" ON offices;
+DROP POLICY IF EXISTS "Allow public insert access to offices" ON offices;
+
+CREATE POLICY "Allow all access to offices"
+  ON offices FOR ALL
+  USING (true)
+  WITH CHECK (true);
 
 -- Create policies for public insert access to bookings
 CREATE POLICY "Allow public insert access to bookings"
