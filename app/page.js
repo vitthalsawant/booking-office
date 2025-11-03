@@ -68,141 +68,18 @@ const features = [
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState('')
-  const router = useRouter()
 
-  // Booking form state
-  const [bookingData, setBookingData] = useState({
-    officeId: '',
-    fullName: '',
-    email: '',
-    phone: '',
-    companyName: '',
-    purpose: '',
-    bookingDate: '',
-    startTime: '',
-    endTime: '',
-    amenities: [],
-  })
-
-  // Fetch offices on mount
-  useEffect(() => {
-    fetchOffices()
-  }, [])
-
-  // Filter offices based on search and type
-  useEffect(() => {
-    let filtered = offices
-
-    if (selectedType) {
-      filtered = filtered.filter(office => office.type === selectedType)
-    }
-
-    if (searchQuery) {
-      filtered = filtered.filter(office => 
-        office.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        office.address.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    }
-
-    setFilteredOffices(filtered)
-  }, [offices, selectedType, searchQuery])
-
-  const fetchOffices = async () => {
-    try {
-      const response = await fetch('/api/offices')
-      const data = await response.json()
-      if (data.success) {
-        setOffices(data.offices)
-        setFilteredOffices(data.offices)
-      }
-    } catch (error) {
-      console.error('Error fetching offices:', error)
-    }
+  const handleSearch = () => {
+    const params = new URLSearchParams()
+    if (searchQuery) params.append('location', searchQuery)
+    window.location.href = `/booking?${params.toString()}`
   }
 
-  const calculatePrice = () => {
-    if (!bookingData.startTime || !bookingData.endTime || !selectedOffice) return 0
-
-    const [startHour, startMin] = bookingData.startTime.split(':').map(Number)
-    const [endHour, endMin] = bookingData.endTime.split(':').map(Number)
-    
-    const startMinutes = startHour * 60 + startMin
-    const endMinutes = endHour * 60 + endMin
-    
-    const durationHours = (endMinutes - startMinutes) / 60
-    
-    if (durationHours <= 0) return 0
-    
-    return Math.round(selectedOffice.base_price_per_hour * durationHours)
+  const handleTypeSelect = (typeId) => {
+    window.location.href = `/booking?type=${typeId}`
   }
 
-  const handleBooking = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-
-    const totalPrice = calculatePrice()
-
-    try {
-      const response = await fetch('/api/bookings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...bookingData,
-          officeId: selectedOffice.id,
-          totalPrice,
-        }),
-      })
-
-      const data = await response.json()
-
-      if (data.success) {
-        toast({
-          title: 'Booking Confirmed! 🎉',
-          description: `Your booking at ${selectedOffice.name} has been confirmed for ${bookingData.bookingDate}`,
-        })
-        // Reset form
-        setBookingData({
-          officeId: '',
-          fullName: '',
-          email: '',
-          phone: '',
-          companyName: '',
-          purpose: '',
-          bookingDate: '',
-          startTime: '',
-          endTime: '',
-          amenities: [],
-        })
-        setView('home')
-      } else {
-        toast({
-          title: 'Booking Failed',
-          description: data.error || 'Something went wrong',
-          variant: 'destructive',
-        })
-      }
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to create booking',
-        variant: 'destructive',
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleAmenityToggle = (amenity) => {
-    setBookingData(prev => ({
-      ...prev,
-      amenities: prev.amenities.includes(amenity)
-        ? prev.amenities.filter(a => a !== amenity)
-        : [...prev.amenities, amenity]
-    }))
-  }
-
-  if (view === 'home') {
-    return (
+  return (
       <div className="min-h-screen bg-background">
         {/* Hero Section */}
         <section className="relative bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-20 px-4">
