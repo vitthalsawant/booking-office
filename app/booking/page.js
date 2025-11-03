@@ -469,46 +469,81 @@ export default function BookingPage() {
                       <p>No offices found. Try different filters or check back later.</p>
                     </div>
                   ) : (
-                    filteredOffices.map((office) => (
-                      <Card
-                        key={office.id}
-                        className={`cursor-pointer transition-all ${
-                          selectedOffice?.id === office.id
-                            ? 'border-primary ring-2 ring-primary'
-                            : 'hover:border-primary/50'
-                        }`}
-                        onClick={() => setSelectedOffice(office)}
-                      >
-                        <CardContent className="p-4">
-                          <div className="flex justify-between items-start mb-2">
-                            <div>
-                              <h3 className="font-semibold text-lg">{office.name}</h3>
-                              <p className="text-sm text-muted-foreground flex items-center gap-1">
-                                <MapPin className="h-3 w-3" />
-                                {office.location}
-                              </p>
+                    filteredOffices.map((office) => {
+                      const dynamicPrice = calculatePriceFromTime(office, searchFilters.timeFrom, searchFilters.timeUntil)
+                      const durationHours = ((new Date(`2000-01-01T${searchFilters.timeUntil}`) - new Date(`2000-01-01T${searchFilters.timeFrom}`)) / 3600000).toFixed(1)
+                      
+                      return (
+                        <Card
+                          key={office.id}
+                          className={`cursor-pointer transition-all border-2 ${
+                            selectedOffice?.id === office.id
+                              ? 'border-primary ring-2 ring-primary bg-primary/5'
+                              : 'hover:border-primary/50 hover:shadow-md'
+                          }`}
+                          onClick={() => {
+                            setSelectedOffice(office)
+                            setShowBookingForm(true)
+                          }}
+                        >
+                          <CardContent className="p-6">
+                            <div className="space-y-4">
+                              <div className="flex justify-between items-start">
+                                <div className="flex-1">
+                                  <h3 className="font-semibold text-xl mb-2">{office.name}</h3>
+                                  <p className="text-muted-foreground flex items-center gap-1 mb-2">
+                                    <MapPin className="h-4 w-4" />
+                                    {office.location}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground mb-3">{office.description}</p>
+                                </div>
+                                <div className="text-right ml-4">
+                                  <div className="text-3xl font-bold text-primary">₹{dynamicPrice}</div>
+                                  <div className="text-sm text-muted-foreground">
+                                    {durationHours}h • ₹{office.base_price_per_hour}/hr
+                                  </div>
+                                  <span className="inline-block px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full mt-2">
+                                    Available
+                                  </span>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center justify-between text-sm">
+                                <div className="flex items-center gap-4">
+                                  <span className="flex items-center gap-1">
+                                    <Users className="h-4 w-4" />
+                                    Up to {office.capacity} people
+                                  </span>
+                                </div>
+                                <Button 
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setSelectedOffice(office)
+                                    setShowBookingForm(true)
+                                  }}
+                                  className="bg-primary hover:bg-primary/90"
+                                >
+                                  Book Now
+                                </Button>
+                              </div>
+                              
+                              <div className="flex flex-wrap gap-2">
+                                {office.amenities?.slice(0, 4).map((amenity, idx) => (
+                                  <span key={idx} className="text-xs bg-muted px-2 py-1 rounded-md">
+                                    {amenity}
+                                  </span>
+                                ))}
+                                {office.amenities?.length > 4 && (
+                                  <span className="text-xs text-muted-foreground">
+                                    +{office.amenities.length - 4} more
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                            <div className="text-right">
-                              <p className="font-bold text-primary">₹{office.base_price_per_hour}/hr</p>
-                              <span className="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
-                                Available
-                              </span>
-                            </div>
-                          </div>
-                          <p className="text-sm text-muted-foreground mb-2">{office.description}</p>
-                          <div className="flex flex-wrap gap-2">
-                            {office.amenities?.slice(0, 3).map((amenity, idx) => (
-                              <span key={idx} className="text-xs bg-muted px-2 py-1 rounded">
-                                {amenity}
-                              </span>
-                            ))}
-                            {office.amenities?.length > 3 && (
-                              <span className="text-xs text-muted-foreground">+{office.amenities.length - 3} more</span>
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))
+                          </CardContent>
+                        </Card>
+                      )
+                    })
                   )}
                 </div>
               </CardContent>
