@@ -549,166 +549,138 @@ export default function BookingPage() {
               </CardContent>
             </Card>
 
-            {/* Booking Form */}
-            {selectedOffice && (
-              <Card>
+            {/* Booking Form - Shows below when office is selected */}
+            {selectedOffice && showBookingForm && (
+              <Card className="mt-6">
                 <CardHeader>
-                  <CardTitle>Book {selectedOffice.name}</CardTitle>
-                  <CardDescription>Fill in your details to complete booking</CardDescription>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle>Complete Your Booking</CardTitle>
+                      <CardDescription>Fill in details for {selectedOffice.name}</CardDescription>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      onClick={() => {
+                        setShowBookingForm(false)
+                        setSelectedOffice(null)
+                      }}
+                    >
+                      ✕
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleBooking} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="fullName">Full Name *</Label>
-                        <Input
-                          id="fullName"
-                          required
-                          value={bookingData.fullName}
-                          onChange={(e) => setBookingData({...bookingData, fullName: e.target.value})}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="email">Email *</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          required
-                          value={bookingData.email}
-                          onChange={(e) => setBookingData({...bookingData, email: e.target.value})}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="phone">Phone Number *</Label>
-                        <Input
-                          id="phone"
-                          type="tel"
-                          required
-                          value={bookingData.phone}
-                          onChange={(e) => setBookingData({...bookingData, phone: e.target.value})}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="company">Company Name</Label>
-                        <Input
-                          id="company"
-                          value={bookingData.companyName}
-                          onChange={(e) => setBookingData({...bookingData, companyName: e.target.value})}
-                        />
-                      </div>
+                  {/* Price Summary */}
+                  <div className="bg-muted p-4 rounded-lg mb-6">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-lg font-semibold">Total Price:</span>
+                      <span className="text-3xl font-bold text-primary">
+                        ₹{calculatePriceFromTime(selectedOffice, searchFilters.timeFrom, searchFilters.timeUntil)}
+                      </span>
                     </div>
-
-                    <div>
-                      <Label htmlFor="purpose">Purpose of Booking *</Label>
-                      <Textarea
-                        id="purpose"
-                        required
-                        value={bookingData.purpose}
-                        onChange={(e) => setBookingData({...bookingData, purpose: e.target.value})}
-                      />
+                    <div className="text-sm text-muted-foreground">
+                      {((new Date(`2000-01-01T${searchFilters.timeUntil}`) - new Date(`2000-01-01T${searchFilters.timeFrom}`)) / 3600000).toFixed(1)} hours • 
+                      {searchFilters.numberOfPeople} {searchFilters.numberOfPeople === 1 ? 'person' : 'people'} • 
+                      {searchFilters.date}
                     </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="date">Date *</Label>
-                        <Input
-                          id="date"
-                          type="date"
-                          required
-                          value={bookingData.bookingDate}
-                          onChange={(e) => setBookingData({...bookingData, bookingDate: e.target.value})}
-                          min={new Date().toISOString().split('T')[0]}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="duration">Duration Package *</Label>
-                        <Select 
-                          value={bookingData.duration} 
-                          onValueChange={(value) => setBookingData({...bookingData, duration: value})}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select duration" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {durationPackages.map(pkg => (
-                              <SelectItem key={pkg.id} value={pkg.id}>
-                                <div className="flex flex-col">
-                                  <span className="font-medium">{pkg.name}</span>
-                                  <span className="text-xs text-muted-foreground">{pkg.description}</span>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                    <div className="mt-3">
+                      <Button 
+                        className="w-full h-12 text-lg font-semibold"
+                        onClick={() => {
+                          // Expand to show full form
+                          document.getElementById('booking-form').scrollIntoView({ behavior: 'smooth' })
+                        }}
+                      >
+                        📝 Add Booking Details
+                      </Button>
                     </div>
+                  </div>
 
-                    {/* Custom time fields - only show when custom duration is selected */}
-                    {bookingData.duration === 'custom' && (
+                  {/* Full Booking Form */}
+                  <div id="booking-form">
+                    <form onSubmit={handleBooking} className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <Label htmlFor="customStartTime">Start Time *</Label>
+                          <Label htmlFor="fullName">Full Name *</Label>
                           <Input
-                            id="customStartTime"
-                            type="time"
+                            id="fullName"
                             required
-                            value={bookingData.customStartTime}
-                            onChange={(e) => setBookingData({...bookingData, customStartTime: e.target.value})}
+                            value={bookingData.fullName}
+                            onChange={(e) => setBookingData({...bookingData, fullName: e.target.value})}
                           />
                         </div>
                         <div>
-                          <Label htmlFor="customEndTime">End Time *</Label>
+                          <Label htmlFor="email">Email *</Label>
                           <Input
-                            id="customEndTime"
-                            type="time"
+                            id="email"
+                            type="email"
                             required
-                            value={bookingData.customEndTime}
-                            onChange={(e) => setBookingData({...bookingData, customEndTime: e.target.value})}
+                            value={bookingData.email}
+                            onChange={(e) => setBookingData({...bookingData, email: e.target.value})}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="phone">Phone Number *</Label>
+                          <Input
+                            id="phone"
+                            type="tel"
+                            required
+                            value={bookingData.phone}
+                            onChange={(e) => setBookingData({...bookingData, phone: e.target.value})}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="company">Company Name</Label>
+                          <Input
+                            id="company"
+                            value={bookingData.companyName}
+                            onChange={(e) => setBookingData({...bookingData, companyName: e.target.value})}
                           />
                         </div>
                       </div>
-                    )}
 
-                    <div>
-                      <Label>Preferred Amenities</Label>
-                      <div className="grid grid-cols-2 gap-2 mt-2">
-                        {amenitiesList.map((amenity) => (
-                          <div key={amenity} className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id={amenity}
-                              checked={bookingData.amenities.includes(amenity)}
-                              onChange={() => handleAmenityToggle(amenity)}
-                              className="rounded"
-                            />
-                            <label htmlFor={amenity} className="text-sm cursor-pointer">
-                              {amenity}
-                            </label>
-                          </div>
-                        ))}
+                      <div>
+                        <Label htmlFor="purpose">Purpose of Booking *</Label>
+                        <Textarea
+                          id="purpose"
+                          required
+                          value={bookingData.purpose}
+                          onChange={(e) => setBookingData({...bookingData, purpose: e.target.value})}
+                          placeholder="e.g., Team meeting, Client presentation, Workshop"
+                        />
                       </div>
-                    </div>
 
-                    {bookingData.duration && (
-                      <div className="bg-muted p-4 rounded-lg">
-                        <div className="flex justify-between items-center">
-                          <span className="text-lg font-semibold">Total Price:</span>
-                          <span className="text-2xl font-bold text-primary">₹{calculatePrice()}</span>
+                      <div>
+                        <Label>Preferred Amenities</Label>
+                        <div className="grid grid-cols-2 gap-2 mt-2">
+                          {amenitiesList.map((amenity) => (
+                            <div key={amenity} className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={amenity}
+                                checked={bookingData.amenities.includes(amenity)}
+                                onChange={() => handleAmenityToggle(amenity)}
+                                className="rounded"
+                              />
+                              <label htmlFor={amenity} className="text-sm cursor-pointer">
+                                {amenity}
+                              </label>
+                            </div>
+                          ))}
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {bookingData.duration === 'custom' && bookingData.customStartTime && bookingData.customEndTime ? (
-                            `Duration: ${((new Date(`2000-01-01T${bookingData.customEndTime}`) - new Date(`2000-01-01T${bookingData.customStartTime}`)) / 3600000).toFixed(1)} hours`
-                          ) : (
-                            `Package: ${durationPackages.find(pkg => pkg.id === bookingData.duration)?.name || ''}`
-                          )}
-                        </p>
                       </div>
-                    )}
 
-                    <Button type="submit" className="w-full" size="lg" disabled={loading}>
-                      {loading ? 'Processing...' : 'Confirm Booking'}
-                    </Button>
-                  </form>
+                      <div className="pt-4">
+                        <Button 
+                          type="submit" 
+                          className="w-full h-12 text-lg font-semibold" 
+                          disabled={loading}
+                        >
+                          {loading ? 'Submitting...' : '🎉 Submit Booking Request'}
+                        </Button>
+                      </div>
+                    </form>
+                  </div>
                 </CardContent>
               </Card>
             )}
