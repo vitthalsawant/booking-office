@@ -14,9 +14,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
 import { useSearchParams } from 'next/navigation'
-import dynamic from 'next/dynamic'
+import NextDynamic from 'next/dynamic'
 
-const MapComponent = dynamic(() => import('@/components/MapComponent'), { ssr: false })
+const MapComponent = NextDynamic(() => import('@/components/MapComponent'), { ssr: false })
 
 const officeTypes = [
   { id: 'meeting-room', name: 'Meeting Room' },
