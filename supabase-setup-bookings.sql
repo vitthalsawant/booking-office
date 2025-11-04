@@ -45,6 +45,7 @@ CREATE TABLE bookings (
   duration_package TEXT NOT NULL DEFAULT 'custom',
   start_time TIME,
   end_time TIME,
+  number_of_people INTEGER DEFAULT 1,
   total_price INTEGER NOT NULL,
   preferred_amenities TEXT[] DEFAULT '{}',
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'cancelled', 'completed')),

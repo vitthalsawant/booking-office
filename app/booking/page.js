@@ -106,7 +106,7 @@ export default function BookingPage() {
             ? `${booking.start_time.substring(0, 5)} - ${booking.end_time.substring(0, 5)}`
             : (booking.start_time ? booking.start_time.substring(0, 5) : 'Time not set'),
           duration: booking.duration_package || 'Custom',
-          people: booking.number_of_people || booking.office_capacity || searchFilters.numberOfPeople || 1,
+          people: booking.number_of_people || 1,
           price: booking.total_price || 0,
           status: booking.status || 'confirmed',
           email: booking.email,
@@ -196,38 +196,22 @@ export default function BookingPage() {
   const calculatePrice = () => {
     if (!selectedOffice) return 0
 
-    // If custom duration is selected, calculate based on custom times
-    if (bookingData.duration === 'custom') {
-      if (!bookingData.customStartTime || !bookingData.customEndTime) return 0
-      
-      const [startHour, startMin] = bookingData.customStartTime.split(':').map(Number)
-      const [endHour, endMin] = bookingData.customEndTime.split(':').map(Number)
-      
-      const startMinutes = startHour * 60 + startMin
-      const endMinutes = endHour * 60 + endMin
-      
-      const durationHours = (endMinutes - startMinutes) / 60
-      
-      if (durationHours <= 0) return 0
-      
-      return Math.round(selectedOffice.base_price_per_hour * durationHours)
-    }
-
-    // For predefined duration packages
-    const selectedPackage = durationPackages.find(pkg => pkg.id === bookingData.duration)
-    if (!selectedPackage) return 0
-    
-    return Math.round(selectedOffice.base_price_per_hour * selectedPackage.multiplier)
+    // Always use search filter time values (timeFrom, timeUntil) for price calculation
+    // This ensures the price matches what was shown in the search results
+    return calculatePriceFromTime(selectedOffice, searchFilters.timeFrom, searchFilters.timeUntil)
   }
 
   const handleBooking = async (e) => {
     e.preventDefault()
     setLoading(true)
 
-    const totalPrice = calculatePrice()
-    
-    // Use bookingDate from bookingData or fallback to searchFilters.date
-    const bookingDateValue = bookingData.bookingDate || searchFilters.date
+    // Always use search filter values for date, time, and price
+    // This ensures consistency with what was shown in search results
+    const bookingDateValue = searchFilters.date
+    const timeFromValue = searchFilters.timeFrom
+    const timeUntilValue = searchFilters.timeUntil
+    const numberOfPeopleValue = searchFilters.numberOfPeople
+    const totalPrice = calculatePriceFromTime(selectedOffice, timeFromValue, timeUntilValue)
 
     try {
       const response = await fetch('/api/bookings', {
@@ -238,9 +222,9 @@ export default function BookingPage() {
           bookingDate: bookingDateValue,
           officeId: selectedOffice.id,
           totalPrice,
-          timeFrom: searchFilters.timeFrom,
-          timeUntil: searchFilters.timeUntil,
-          numberOfPeople: searchFilters.numberOfPeople,
+          timeFrom: timeFromValue,
+          timeUntil: timeUntilValue,
+          numberOfPeople: numberOfPeopleValue,
         }),
       })
 
@@ -534,6 +518,11 @@ export default function BookingPage() {
                           onClick={() => {
                             setSelectedOffice(office)
                             setShowBookingForm(true)
+                            // Pre-fill booking form with search filter values
+                            setBookingData({
+                              ...bookingData,
+                              bookingDate: searchFilters.date,
+                            })
                           }}
                         >
                           <CardContent className="p-6">
@@ -570,6 +559,11 @@ export default function BookingPage() {
                                     e.stopPropagation()
                                     setSelectedOffice(office)
                                     setShowBookingForm(true)
+                                    // Pre-fill booking form with search filter values
+                                    setBookingData({
+                                      ...bookingData,
+                                      bookingDate: searchFilters.date,
+                                    })
                                   }}
                                   className="bg-primary hover:bg-primary/90"
                                 >
@@ -707,9 +701,52 @@ export default function BookingPage() {
                           type="date"
                           required
                           min={new Date().toISOString().split('T')[0]}
-                          value={bookingData.bookingDate || searchFilters.date}
-                          onChange={(e) => setBookingData({...bookingData, bookingDate: e.target.value})}
+                          value={searchFilters.date}
+                          readOnly
+                          className="bg-muted cursor-not-allowed"
+                          title="Date is set from search filters"
                         />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Date from search: {searchFilters.date}
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <Label>Time Range</Label>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="time"
+                            value={searchFilters.timeFrom}
+                            readOnly
+                            className="bg-muted cursor-not-allowed"
+                            title="Time from search filters"
+                          />
+                          <span className="text-muted-foreground">to</span>
+                          <Input
+                            type="time"
+                            value={searchFilters.timeUntil}
+                            readOnly
+                            className="bg-muted cursor-not-allowed"
+                            title="Time from search filters"
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Time range from search filters
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <Label>Number of People</Label>
+                        <Input
+                          type="number"
+                          value={searchFilters.numberOfPeople}
+                          readOnly
+                          className="bg-muted cursor-not-allowed"
+                          title="Number of people from search filters"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          People from search: {searchFilters.numberOfPeople}
+                        </p>
                       </div>
 
                       <div>
