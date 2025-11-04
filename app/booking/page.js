@@ -85,6 +85,10 @@ export default function BookingPage() {
     amenities: [],
   })
 
+  // City suggestions derived from offices
+  const [cities, setCities] = useState([])
+  const [showCitySuggestions, setShowCitySuggestions] = useState(false)
+
   useEffect(() => {
     fetchOffices()
     fetchBookings()
@@ -140,20 +144,24 @@ export default function BookingPage() {
       filtered = filtered.filter(office => office.type === selectedType)
     }
 
-    // Filter by location from search bar or homepage search
-    if (searchQuery) {
-      filtered = filtered.filter(office => 
-        office.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        office.address.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+    // Filter by location from search bar or homepage search (case-insensitive, trimmed)
+    const q1 = (searchQuery || '').trim().toLowerCase()
+    if (q1) {
+      filtered = filtered.filter(office => {
+        const loc = (office.location || '').toLowerCase()
+        const addr = (office.address || '').toLowerCase()
+        return loc.includes(q1) || addr.includes(q1)
+      })
     }
 
-    // Filter by search form location
-    if (searchFilters.location) {
-      filtered = filtered.filter(office => 
-        office.location.toLowerCase().includes(searchFilters.location.toLowerCase()) ||
-        office.address.toLowerCase().includes(searchFilters.location.toLowerCase())
-      )
+    // Filter by search form location (case-insensitive, trimmed)
+    const q2 = (searchFilters.location || '').trim().toLowerCase()
+    if (q2) {
+      filtered = filtered.filter(office => {
+        const loc = (office.location || '').toLowerCase()
+        const addr = (office.address || '').toLowerCase()
+        return loc.includes(q2) || addr.includes(q2)
+      })
     }
 
     // Filter by capacity (number of people)
@@ -171,6 +179,20 @@ export default function BookingPage() {
       if (data.success) {
         setOffices(data.offices)
         setFilteredOffices(data.offices)
+
+        // Derive unique city names from office locations (e.g., "Area, City" -> City)
+        const derivedCities = Array.from(
+          new Set(
+            (data.offices || [])
+              .map(o => (o.location || ''))
+              .map(loc => {
+                const parts = loc.split(',')
+                return (parts[parts.length - 1] || '').trim()
+              })
+              .filter(Boolean)
+          )
+        ).sort((a, b) => a.localeCompare(b))
+        setCities(derivedCities)
       }
     } catch (error) {
       console.error('Error fetching offices:', error)
@@ -376,8 +398,44 @@ export default function BookingPage() {
                     placeholder="City or area"
                     className="pl-10 h-10"
                     value={searchFilters.location}
-                    onChange={(e) => setSearchFilters({...searchFilters, location: e.target.value})}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      setSearchFilters({...searchFilters, location: value})
+                      setShowCitySuggestions(true)
+                    }}
+                    onFocus={() => setShowCitySuggestions(true)}
+                    onBlur={() => {
+                      // Slight delay to allow click on suggestion
+                      setTimeout(() => setShowCitySuggestions(false), 120)
+                    }}
                   />
+                  {showCitySuggestions && (
+                    <div className="absolute z-20 mt-1 w-full rounded-md border bg-card shadow">
+                      {(() => {
+                        const q = (searchFilters.location || '').trim().toLowerCase()
+                        const matches = (q ? cities.filter(c => c.toLowerCase().includes(q)) : cities).slice(0, 8)
+                        if (matches.length === 0) {
+                          return (
+                            <div className="px-3 py-2 text-sm text-muted-foreground">No suggestions</div>
+                          )
+                        }
+                        return matches.map(city => (
+                          <button
+                            key={city}
+                            type="button"
+                            className="w-full text-left px-3 py-2 text-sm hover:bg-muted"
+                            onMouseDown={(e) => {
+                              e.preventDefault()
+                              setSearchFilters({...searchFilters, location: city})
+                              setShowCitySuggestions(false)
+                            }}
+                          >
+                            {city}
+                          </button>
+                        ))
+                      })()}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
