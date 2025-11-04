@@ -1078,7 +1078,7 @@ export async function POST(request) {
         total_price: body.totalPrice,
         preferred_amenities: body.amenities || [],
         created_at: new Date().toISOString(),
-        status: 'pending' // Initially pending, can be confirmed from Supabase
+        status: 'confirmed' // Booking is automatically confirmed on submission
       }
 
       const { data, error } = await supabase

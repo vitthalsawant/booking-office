@@ -108,7 +108,7 @@ export default function BookingPage() {
           duration: booking.duration_package || 'Custom',
           people: booking.number_of_people || booking.office_capacity || searchFilters.numberOfPeople || 1,
           price: booking.total_price || 0,
-          status: booking.status || 'pending',
+          status: booking.status || 'confirmed',
           email: booking.email,
           phone: booking.phone,
           purpose: booking.purpose
@@ -250,7 +250,7 @@ export default function BookingPage() {
         // Show success notification with better styling
         toast({
           title: '✅ Booking Confirmed! 🎉',
-          description: `Your booking for ${selectedOffice.name} at ${selectedOffice.location} has been successfully submitted!`,
+          description: `Your booking for ${selectedOffice.name} at ${selectedOffice.location} has been confirmed! Status: Confirmed.`,
           duration: 5000,
         })
         
@@ -452,12 +452,8 @@ export default function BookingPage() {
                           <div className="space-y-3">
                             <div className="flex justify-between items-start">
                               <h4 className="font-semibold text-lg">{booking.office_name}</h4>
-                              <span className={`text-sm px-3 py-1 rounded-full font-medium ${
-                                booking.status === 'confirmed' 
-                                  ? 'bg-green-100 text-green-700' 
-                                  : 'bg-yellow-100 text-yellow-700'
-                              }`}>
-                                {booking.status === 'confirmed' ? 'Confirmed' : 'Pending'}
+                              <span className="text-sm px-3 py-1 rounded-full font-medium bg-green-100 text-green-700">
+                                ✓ Confirmed
                               </span>
                             </div>
                             <p className="text-muted-foreground flex items-center gap-1">
