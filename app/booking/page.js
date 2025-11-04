@@ -87,7 +87,45 @@ export default function BookingPage() {
 
   useEffect(() => {
     fetchOffices()
+    fetchBookings()
   }, [])
+
+  // Fetch bookings from database
+  const fetchBookings = async () => {
+    try {
+      const response = await fetch('/api/bookings')
+      const data = await response.json()
+      if (data.success && data.bookings) {
+        // Transform bookings to match the expected format
+        const formattedBookings = data.bookings.map(booking => ({
+          id: booking.id,
+          office_name: booking.office_name || booking.offices?.name || 'Office',
+          location: booking.office_location || booking.offices?.location || booking.location || 'Location',
+          date: booking.booking_date,
+          time: booking.start_time && booking.end_time 
+            ? `${booking.start_time.substring(0, 5)} - ${booking.end_time.substring(0, 5)}`
+            : (booking.start_time ? booking.start_time.substring(0, 5) : 'Time not set'),
+          duration: booking.duration_package || 'Custom',
+          people: booking.number_of_people || booking.office_capacity || searchFilters.numberOfPeople || 1,
+          price: booking.total_price || 0,
+          status: booking.status || 'pending',
+          email: booking.email,
+          phone: booking.phone,
+          purpose: booking.purpose
+        }))
+        // Sort by most recent first
+        formattedBookings.sort((a, b) => new Date(b.date) - new Date(a.date))
+        setExistingBookings(formattedBookings)
+      }
+    } catch (error) {
+      console.error('Error fetching bookings:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to fetch bookings. Please try again.',
+        variant: 'destructive',
+      })
+    }
+  }
 
   useEffect(() => {
     let filtered = offices
@@ -187,6 +225,9 @@ export default function BookingPage() {
     setLoading(true)
 
     const totalPrice = calculatePrice()
+    
+    // Use bookingDate from bookingData or fallback to searchFilters.date
+    const bookingDateValue = bookingData.bookingDate || searchFilters.date
 
     try {
       const response = await fetch('/api/bookings', {
@@ -194,6 +235,7 @@ export default function BookingPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...bookingData,
+          bookingDate: bookingDateValue,
           officeId: selectedOffice.id,
           totalPrice,
           timeFrom: searchFilters.timeFrom,
@@ -205,25 +247,18 @@ export default function BookingPage() {
       const data = await response.json()
 
       if (data.success) {
-        // Add the booking to local state
-        const newBooking = {
-          id: data.booking.id,
-          office_name: selectedOffice.name,
-          location: selectedOffice.location,
-          date: bookingData.bookingDate,
-          time: `${searchFilters.timeFrom} - ${searchFilters.timeUntil}`,
-          duration: bookingData.duration || 'Custom',
-          people: searchFilters.numberOfPeople,
-          price: totalPrice,
-          status: 'pending'
-        }
-        
-        setExistingBookings(prev => [newBooking, ...prev])
-        
+        // Show success notification with better styling
         toast({
-          title: 'Booking Submitted! 🎉',
-          description: `Your booking request has been submitted for ${selectedOffice.name}. Status: Pending confirmation.`,
+          title: '✅ Booking Confirmed! 🎉',
+          description: `Your booking for ${selectedOffice.name} at ${selectedOffice.location} has been successfully submitted!`,
+          duration: 5000,
         })
+        
+        // Refresh bookings from database to show all bookings
+        await fetchBookings()
+        
+        // Open "My Bookings" modal automatically
+        setShowBookingsModal(true)
         
         // Reset form
         setBookingData({
@@ -387,11 +422,21 @@ export default function BookingPage() {
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-2xl font-bold flex items-center gap-2">
                     <Calendar className="h-6 w-6" />
-                    My Bookings
+                    My Bookings ({existingBookings.length})
                   </h2>
-                  <Button variant="ghost" onClick={() => setShowBookingsModal(false)}>
-                    ✕
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={fetchBookings}
+                      title="Refresh bookings"
+                    >
+                      🔄 Refresh
+                    </Button>
+                    <Button variant="ghost" onClick={() => setShowBookingsModal(false)}>
+                      ✕
+                    </Button>
+                  </div>
                 </div>
                 
                 {existingBookings.length === 0 ? (
@@ -415,12 +460,21 @@ export default function BookingPage() {
                                 {booking.status === 'confirmed' ? 'Confirmed' : 'Pending'}
                               </span>
                             </div>
-                            <p className="text-muted-foreground">{booking.location}</p>
+                            <p className="text-muted-foreground flex items-center gap-1">
+                              <MapPin className="h-4 w-4" />
+                              {booking.location || 'Location not available'}
+                            </p>
                             <div className="grid grid-cols-2 gap-4">
                               <div>
                                 <span className="font-medium text-sm">Date:</span>
                                 <br />
-                                <span className="text-sm">{new Date(booking.date).toLocaleDateString()}</span>
+                                <span className="text-sm">
+                                  {booking.date ? new Date(booking.date).toLocaleDateString('en-US', { 
+                                    year: 'numeric', 
+                                    month: 'short', 
+                                    day: 'numeric' 
+                                  }) : 'N/A'}
+                                </span>
                               </div>
                               <div>
                                 <span className="font-medium text-sm">Time:</span>
@@ -647,6 +701,18 @@ export default function BookingPage() {
                           value={bookingData.purpose}
                           onChange={(e) => setBookingData({...bookingData, purpose: e.target.value})}
                           placeholder="e.g., Team meeting, Client presentation, Workshop"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="bookingDate">Booking Date *</Label>
+                        <Input
+                          id="bookingDate"
+                          type="date"
+                          required
+                          min={new Date().toISOString().split('T')[0]}
+                          value={bookingData.bookingDate || searchFilters.date}
+                          onChange={(e) => setBookingData({...bookingData, bookingDate: e.target.value})}
                         />
                       </div>
 

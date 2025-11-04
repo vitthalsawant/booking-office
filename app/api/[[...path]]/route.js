@@ -1009,17 +1009,39 @@ export async function GET(request) {
     }
   }
 
-  // GET /api/bookings - Fetch all bookings
+  // GET /api/bookings - Fetch all bookings with office details
   if (pathname === '/api/bookings') {
     try {
       const { data, error } = await supabase
         .from('bookings')
-        .select('*')
+        .select(`
+          *,
+          offices:office_id (
+            id,
+            name,
+            type,
+            location,
+            address,
+            base_price_per_hour,
+            capacity
+          )
+        `)
         .order('created_at', { ascending: false })
 
       if (error) throw error
 
-      return NextResponse.json({ success: true, bookings: data || [] })
+      // Transform the data to include office details in a flat structure
+      const bookingsWithOffice = (data || []).map(booking => ({
+        ...booking,
+        office_name: booking.offices?.name || null,
+        office_type: booking.offices?.type || null,
+        office_location: booking.offices?.location || null,
+        office_address: booking.offices?.address || null,
+        office_base_price: booking.offices?.base_price_per_hour || null,
+        office_capacity: booking.offices?.capacity || null,
+      }))
+
+      return NextResponse.json({ success: true, bookings: bookingsWithOffice })
     } catch (error) {
       return NextResponse.json(
         { success: false, error: error.message },
@@ -1062,11 +1084,30 @@ export async function POST(request) {
       const { data, error } = await supabase
         .from('bookings')
         .insert([bookingData])
-        .select()
+        .select(`
+          *,
+          offices:office_id (
+            id,
+            name,
+            type,
+            location,
+            address,
+            base_price_per_hour,
+            capacity
+          )
+        `)
 
       if (error) throw error
 
-      return NextResponse.json({ success: true, booking: data[0] })
+      // Transform the booking data to include office details
+      const bookingWithOffice = data[0] ? {
+        ...data[0],
+        office_name: data[0].offices?.name || null,
+        office_location: data[0].offices?.location || null,
+        office_address: data[0].offices?.address || null,
+      } : data[0]
+
+      return NextResponse.json({ success: true, booking: bookingWithOffice })
     } catch (error) {
       return NextResponse.json(
         { success: false, error: error.message },
